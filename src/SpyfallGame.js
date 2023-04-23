@@ -357,7 +357,7 @@ const l1 = [
         newPlayers[randomIndex].isSpy = true;
       }
 
-      console.log(newPlayers)
+    //   console.log(newPlayers)
   
       setPlayers(newPlayers);
       setIsSpy(newPlayers[currentPlayerIndex].isSpy);
