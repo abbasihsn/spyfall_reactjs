@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./SpyfallGame.css";
+import Footer from "./Footer";
 
 const l1 = [
     "سیلی",
@@ -415,6 +416,7 @@ const l1 = [
             )}
           </div>
         )}
+        <Footer />
         </div>)
  }
   
