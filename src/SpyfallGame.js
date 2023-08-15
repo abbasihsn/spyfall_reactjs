@@ -320,102 +320,103 @@ const l1 = [
  const LOCATIONS = l1.concat(l2, l3, l4, l5)  
 
  const SpyfallGame = () => {
-    const [location, setLocation] = useState("");
-    const [players, setPlayers] = useState([]);
-    const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
-    const [gameStarted, setGameStarted] = useState(false);
-    const [isSpy, setIsSpy] = useState(false);
-    const [numPlayers, setNumPlayers] = useState(0);
-    const [numSpies, setNumSpies] = useState(0);
+    
+    const [numberOfUsers, setNumberOfUsers] = useState(0)
+    const [numberOfSpies, setNumberOfSpies] = useState(0)
+    const [gameStarted, setGameStarted] = useState(false)
+    const [selectedLocation, setSelectedLocation] = useState()
+    const [playersRole, setPlayersRole] = useState([])
+    const [currentIdx, setCurrentIdx] = useState(0)
     const [showRole, setShowRole] = useState(false);
-  
-    const handleNumPlayersChange = (event) => {
-      setNumPlayers(parseInt(event.target.value));
-    };
-  
-    const handleNumSpiesChange = (event) => {
-      setNumSpies(parseInt(event.target.value));
-    };
-  
-    const startGame = () => {
-      const locationIndex = Math.floor(Math.random() * LOCATIONS.length);
-      setLocation(LOCATIONS[locationIndex]);
-  
-      const newPlayers = [];
-      for (let i = 0; i < numPlayers; i++) {
-        newPlayers.push({
-          isSpy: false,
-          isAccused: false
-        });
-      }
-  
-      // set spies
-      for (let i = 0; i < numSpies; i++) {
-        let randomIndex;
-        do {
-          randomIndex = Math.floor(Math.random() * numPlayers);
-        } while (newPlayers[randomIndex].isSpy);
-        newPlayers[randomIndex].isSpy = true;
-      }
+    const handleUserNumberChange = (event)=>{
+      console.log(`user number: ${event.target.value}`)
+      setNumberOfUsers(event.target.value)
+    }
 
-    //   console.log(newPlayers)
-  
-      setPlayers(newPlayers);
-      setIsSpy(newPlayers[currentPlayerIndex].isSpy);
-      setCurrentPlayerIndex(0);
-      setGameStarted(true);
-    };
-  
-    const nextPlayer = () => {
-      setShowRole(false);
-      const nextIndex = currentPlayerIndex + 1;
-      if (nextIndex < numPlayers) {
-        setCurrentPlayerIndex(nextIndex);
-        setIsSpy(players[nextIndex].isSpy);
-      } else {
-        setGameStarted(false);
+    const handleSpyNumberChange = (event)=>{
+      console.log(`spy number: ${event.target.value}`)
+      setNumberOfSpies(event.target.value)
+    }
+
+    const startGame = ()=>{
+      console.log(`start game: user number: ${numberOfUsers} - spies: ${numberOfSpies}`)
+
+      if(numberOfSpies>0 & numberOfUsers>0){
+        const locationIndex = Math.floor(Math.random() * LOCATIONS.length);
+        setSelectedLocation(LOCATIONS[locationIndex])
+
+        // create new role list
+        const playerIsSpy = [];
+        for (let i = 0; i < numberOfUsers; i++) {
+          playerIsSpy.push(false);
+        }
+
+        // set spies
+        for (let i = 0; i < numberOfSpies; i++) {
+          let randomIndex;
+          do {
+            randomIndex = Math.floor(Math.random() * numberOfUsers);
+          } while (playerIsSpy[randomIndex]);
+          playerIsSpy[randomIndex] = true;
+        }
+
+        console.log(`players role: ${playerIsSpy}`)
+        setPlayersRole(playerIsSpy)
+        setCurrentIdx(0)
+        setGameStarted(true)
+
       }
-    };
-  
-    const showCurrentRole = () => {
+    }
+
+    const showCurrentRole = ()=>{
       setShowRole(true);
-    };
-  
+    }
+
+    const nextPlayer = ()=>{
+      setShowRole(false);
+
+      if(currentIdx<(numberOfUsers-1)){
+        setCurrentIdx(prevState=>prevState+1)
+      } else{
+        setGameStarted(false)
+      }
+      
+
+    }
+
+
     return (
       <div className="spyfall-game-container">
-        {!gameStarted && (
-          <div className="setup-container">
-            <h1 className="title">Spyfall Game</h1>
-            <div className="setup-form">
-              <label>
-                Number of players:
-                <input type="number" value={numPlayers} onChange={handleNumPlayersChange} />
-              </label>
-              <label>
-                Number of spies:
-                <input type="number" value={numSpies} onChange={handleNumSpiesChange} />
-              </label>
-            </div>
-            <button className="start-button" onClick={startGame}>Start Game</button>
-          </div>
-        )}
         {gameStarted && (
           <div className="gameplay-container">
             {!showRole && (
-              <div>
-                
-                <h3 className="player-turn">Player {currentPlayerIndex + 1}'s turn</h3>
+              <div>                
+                <h3 className="player-turn">Player {currentIdx + 1}'s turn</h3>
                 <button className="next-button" onClick={showCurrentRole}>Show My Role</button>
               </div>
             )}
             {showRole && (
               <div>
-                <h1 className="title">{isSpy ? "SPY 🤐" : `${location}`}</h1>
+                <h1 className="title">{playersRole[currentIdx] ? "SPY 🤐" : `${selectedLocation}`}</h1>
                 <button className="next-button" onClick={nextPlayer}>Next Player</button>
               </div>
             )}
           </div>
         )}
+        {!gameStarted &&  <div className="setup-container">
+            <h1 className="title">Spyfall Game</h1>
+            <div className="setup-form">
+              <label>
+                Number of players:
+                <input type="number" value={numberOfUsers} onChange={handleUserNumberChange} />
+              </label>
+              <label>
+                Number of spies:
+                <input type="number" value={numberOfSpies} onChange={handleSpyNumberChange} />
+              </label>
+            </div>
+            <button className="start-button" onClick={startGame}>Start Game</button>
+          </div>}
         <Footer />
         </div>)
  }
